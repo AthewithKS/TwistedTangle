@@ -4,22 +4,39 @@ using UnityEngine;
 
 public class LineController : MonoBehaviour
 {
-    private LineRenderer lineRenderer;
-    [SerializeField] private Transform[] CylinerPoints;
+    public LineRenderer lineRenderer;
     // Start is called before the first frame update
+
+    [SerializeField] List<Transform> nodes;
     void Start()
     {
         lineRenderer = GetComponent<LineRenderer>();
-        
+        // Ensure the LineRenderer position count is set to the number of nodes
+        if (nodes != null && nodes.Count > 0)
+        {
+            lineRenderer.positionCount = nodes.Count;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
-        lineRenderer.positionCount= CylinerPoints.Length;
-        for (int i = 0; i < CylinerPoints.Length; i++) 
+        if (nodes != null && nodes.Count > 0)
         {
-            lineRenderer.SetPosition(i, CylinerPoints[i].position);
+            // Update the positions of the LineRenderer based on the nodes
+            Vector3[] positions = nodes.ConvertAll(n => n.position).ToArray();
+            lineRenderer.SetPositions(positions);
         }
+    }
+
+    public Vector3[] GetPositions()
+    {
+        Vector3[] positions = new Vector3[lineRenderer.positionCount];
+        lineRenderer.GetPositions(positions);
+        return positions;
+    }
+
+    public float GetWidth()
+    {
+        return lineRenderer.startWidth;
     }
 }
